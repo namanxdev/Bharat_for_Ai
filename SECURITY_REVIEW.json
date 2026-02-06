@@ -1,0 +1,97 @@
+{
+  "score": 72,
+  "verdict": "request_changes",
+  "security_findings": [
+    {
+      "severity": "critical",
+      "issue": "Hardcoded Google API key exposed in .env file. Real API key is committed to repository.",
+      "line": "backend/.env:11",
+      "fix": "Replace with placeholder immediately: GOOGLE_API_KEY=your_google_api_key_here. Rotate the actual API key. Add .env to .gitignore. Use git filter-branch or BFG Repo-Cleaner to remove from history."
+    },
+    {
+      "severity": "critical",
+      "issue": "CORS misconfiguration: allow_origins=['*'] with allow_credentials=True enables CSRF attacks. Any website can make authenticated requests.",
+      "line": "backend/main.py:35",
+      "fix": "Use configured allowed origins instead of wildcard. Restrict HTTP methods to GET/POST only. Restrict headers to Content-Type. Updated code: allowed_origins = settings.cors_origins if settings.cors_origins else ['http://localhost:5173', 'http://localhost:3000']; app.add_middleware(CORSMiddleware, allow_origins=allowed_origins, allow_credentials=True, allow_methods=['GET', 'POST'], allow_headers=['Content-Type']). Fix applied."
+    },
+    {
+      "severity": "high",
+      "issue": "Session fixation vulnerability: session_id parameter accepts any string without validation. Attacker can hijack sessions by guessing or predicting IDs.",
+      "line": "backend/routes/chat.py:29-57",
+      "fix": "Add UUID format validation. Create pattern: VALID_SESSION_ID_PATTERN = re.compile(r'^[a-f0-9\\-]{36}$'). Validate all session_id inputs and reject invalid formats with HTTP 400. Recommended: Frontend generates session IDs as: const sessionId = crypto.randomUUID(). Fix applied."
+    },
+    {
+      "severity": "high",
+      "issue": "Missing rate limiting on all endpoints. SMS endpoint vulnerable to spam, DoS, and Twilio account abuse. No protection against automated attacks.",
+      "line": "backend/routes/sms.py, backend/routes/chat.py, backend/routes/eligibility.py",
+      "fix": "Implement rate limiting: SMS (5 per minute per phone), Chat (20 per minute per session), Eligibility (30 per minute per IP). Create utils/rate_limit.py with RateLimiter class using sliding window algorithm. Check is_allowed() before processing and return HTTP 429 if exceeded. Fix applied."
+    },
+    {
+      "severity": "high",
+      "issue": "Unvalidated LLM output returned directly to client. While LLM is constrained, output could contain malicious HTML/JS that gets rendered in frontend as XSS.",
+      "line": "backend/routes/chat.py:191-202",
+      "fix": "Add sanitize_response() function: Remove all <script> and <iframe> tags. Remove event handlers like onclick, onerror, javascript: URLs. Use regex: re.sub(r'<script[^>]*>.*?</script>', '', text, flags=re.IGNORECASE|re.DOTALL). Call sanitize_response(response_text) before returning. Fix applied."
+    },
+    {
+      "severity": "medium",
+      "issue": "Sensitive data exposure in API responses. Exception messages from Twilio API returned to client, leaking internal implementation details.",
+      "line": "backend/services/sms_service.py:75-79",
+      "fix": "Log full error details server-side: logger.error(f'Failed to send SMS via Twilio: {e}'). Return generic message to client: 'Failed to send SMS. Please try again later.' Do not expose exception details to API consumers. Fix applied."
+    },
+    {
+      "severity": "medium",
+      "issue": "Personally Identifiable Information (PII) in logs. Full phone numbers logged, violating GDPR, CCPA, and Indian Privacy regulations.",
+      "line": "backend/services/sms_service.py:67, 83",
+      "fix": "Mask phone numbers in logs: masked_phone = phone[-4:].rjust(len(phone), '*'). This shows only last 4 digits (9876543210 becomes ****543210). Maintains debuggability while protecting privacy. Fix applied."
+    },
+    {
+      "severity": "medium",
+      "issue": "Memory leak in session management. Session cleanup only happens on request processing. Long-running servers or idle periods accumulate sessions causing memory exhaustion.",
+      "line": "backend/routes/chat.py:39-46",
+      "fix": "Implement periodic background cleanup using APScheduler. Schedule task to run every 30 minutes. For distributed systems, use Redis for session storage. Partial fix applied in rate_limit.py cleanup() method. Recommend implementing full scheduler for production."
+    },
+    {
+      "severity": "low",
+      "issue": "Missing security HTTP headers. X-Content-Type-Options, X-Frame-Options, X-XSS-Protection, Strict-Transport-Security not set.",
+      "line": "backend/main.py",
+      "fix": "Add middleware to inject security headers: @app.middleware('http') async def add_security_headers(request, call_next): response = await call_next(request); response.headers['X-Content-Type-Options'] = 'nosniff'; response.headers['X-Frame-Options'] = 'DENY'; response.headers['X-XSS-Protection'] = '1; mode=block'; return response."
+    },
+    {
+      "severity": "low",
+      "issue": "No request size limit validation. Large POST requests could consume excessive server memory or be used for DoS attacks.",
+      "line": "backend/main.py",
+      "fix": "Add request size validation middleware. Check Content-Length header and reject requests larger than 1MB: if int(content_length) > 1048576: return JSONResponse(status_code=413, content={'error': 'Request too large'}). Prevents memory exhaustion from large payloads."
+    }
+  ],
+  "must_fix": [
+    "CRITICAL: Immediately invalidate and rotate the exposed Google API key. Do not continue using AIzaSyDTQlIVBEk73Aw7ynUD0hD-PKhwpnHe6GQ.",
+    "CRITICAL: Verify CORS configuration fix is working. Test from different origins - requests from unallowed origins should fail with CORS error.",
+    "HIGH: Test session fixation fix - send request with invalid session_id like 'test123' and verify HTTP 400 response.",
+    "HIGH: Verify rate limiting by sending 6 SMS requests with same phone number within 60 seconds. 6th should return HTTP 429.",
+    "HIGH: Test LLM output sanitization - verify no <script> tags, iframes, or event handlers in responses.",
+    "Ensure .env file is added to .gitignore to prevent future secret leaks.",
+    "Update frontend to generate valid UUID for session_id: const sessionId = crypto.randomUUID()."
+  ],
+  "suggestions": [
+    "Add Bandit and safety checks to CI/CD pipeline for automated security scanning.",
+    "Implement comprehensive request/response logging middleware for audit trails and debugging.",
+    "Use FastAPI dependency injection pattern for rate limiting to reduce code duplication across endpoints.",
+    "Migrate to Redis for distributed session storage when scaling to multiple servers.",
+    "When adding database, use parameterized queries and SQLAlchemy ORM to prevent SQL injection.",
+    "Set up automated secret scanning using git-secrets or Detect-Secrets.",
+    "Add Pydantic field validators for all user inputs (email format, state names, categories).",
+    "Implement API versioning strategy (/v1/chat, /v1/eligibility) for future compatibility.",
+    "Add OpenAPI security scheme documentation for generated Swagger docs.",
+    "Consider JWT-based stateless session management for scalability instead of in-memory storage.",
+    "Add comprehensive error handling tests to verify no sensitive information leakage.",
+    "Implement request signing with HMAC for additional API integrity verification.",
+    "Enforce HTTPS/TLS with Strict-Transport-Security header (max-age=31536000).",
+    "Monitor and log all eligibility checks for audit compliance and fraud detection.",
+    "Implement graceful degradation for LLM/Twilio service failures with fallback responses.",
+    "Add schema validation middleware to enforce API contract consistency.",
+    "Consider endpoint-specific rate limits - higher for eligibility checks, lower for SMS.",
+    "Set up anomaly detection for suspicious patterns: rapid eligibility checks, spam SMS attempts.",
+    "Implement credential rotation policy for Twilio tokens (rotate every 90 days).",
+    "Use environment-specific configuration files (.env.production, .env.staging, .env.development)."
+  ]
+}
