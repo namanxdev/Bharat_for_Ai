@@ -1,0 +1,209 @@
+Team Name : Crusaders
+Problem Statement : Build an AI-powered solution that improves access to information, resources, or
+opportunities for communities and public systems.
+Brief about the Idea:
+Millions of citizens struggle to access government welfare
+schemes due to:
+Lack of awareness
+Complex eligibility rules
+Language and literacy barriers
+Difficult online application portals
+Our solution is an AI-powered assistant platform that helps
+citizens:
+Discover relevant schemes
+Check eligibility instantly
+Get guided support in local languages
+Apply through secure autofill + agent-assisted submission
+This reduces friction between citizens and public service
+systems.
+Existing government portals are static and hard to navigate.
+Most solutions only provide information, not application support.
+Our platform is AI-driven, personalized, and multilingual.
+Unlike generic chatbots, it includes eligibility checking + autofill workflows.
+Adds an agent verification layer to ensure trust, consent, and real submission
+support.
+Designed specifically for rural, low-literacy, and PWD users with voice-first
+access.
+Multilingual + Voice-First AI Assistant for inclusive access
+Personalized Scheme Recommendation based on user profile
+Secure Autofill Application Drafts for faster applications
+Agent Verification + Consent Layer prevents misuse and
+ensures trust
+End-to-End Support from scheme discovery → eligibility →
+submission → tracking
+Built for real-world deployment via WhatsApp and low
+bandwidth channels
+Citizens often miss schemes due to lack of awareness and complexity.
+The AI chatbot helps users discover relevant schemes instantly.
+Eligibility engine reduces confusion by showing only applicable schemes.
+Autofill system removes repetitive manual form filling and reduces errors.
+Agent-assisted workflow enables completion even when govt portals require OTP/CAPTCHA.
+Notifications and tracking ensure users stay informed after applying.
+List of features offered by the solution
+It is always better to add a few visual representations (drawings/sketches/illustrations etc.) to your
+presentation, it adds to the power through which it reaches the audience.
+AI Chatbot for Scheme Discovery
+Users ask questions in local language and get accurate scheme guidance.
+Eligibility Check & Recommendation Engine
+Matches schemes based on user profile (age, income, category, location).
+User Profile Database (One-Time Data Entry)
+Citizens provide details once; reused for multiple applications.
+Autofill Application Draft Generator
+Forms are pre-filled automatically to reduce effort and errors.
+Agent-Assisted Submission Layer
+Agents confirm documents, OTP, and final submission for security.
+Accessibility Support
+Voice interface, low-bandwidth access, PWD-friendly design.
+Process flow diagram or Use-case diagram
+Add a flow diagram or a use case diagram or an architecture diagram.
+User Flow
+1.Citizen interacts with chatbot
+(voice/text/WhatsApp)
+2.AI understands request and detects
+intent
+3.System retrieves schemes from
+database
+4.Eligibility is checked instantly
+5.User selects a scheme to apply
+6.Form is auto-filled using stored profile
+7.Agent verifies documents + user consent
+8.Application is submitted and tracked
+Wireframes/Mock diagrams of the proposed solution (optional)
+Whisper
+Notification
+Cloudwatch
+Architecture diagram of the proposed solution
+1. User Access Layer
+Citizens access the platform via Mobile App / Web / WhatsApp / Voice.
+Supports rural and low-literacy users.
+Example: User asks: “Which scholarship can I apply for?”
+2. AI Interaction Layer
+Speech-to-Text (ASR): Converts voice queries into text.
+Multilingual Chatbot: Provides scheme guidance in local languages.
+NLP Intent Detection: Extracts intent + key details (age, state, category).
+Example: Query: “Old age pension in MP” → Intent: Pension Scheme Lookup, Entity:
+State = MP
+3. Data & Knowledge Layer
+Scheme Database: Stores govt schemes, eligibility rules, and required documents.
+User Profile Database: Stores citizen details securely (with consent).
+Vector Search Engine: Retrieves the most relevant schemes using semantic search.
+Example:  “Help for poor students” → Scholarship schemes retrieved.
+4. Application Assistance Layer
+Eligibility Engine: Checks scheme eligibility using rules + AI.
+Autofill Form Generator: Prefills forms using saved user profile data.
+Agent Verification Dashboard: Agent confirms documents + OTP consent.
+Example: User details auto-mapped into application form fields.
+5. Submission & Notification Layer
+Assisted submission on the govt portal (manual due to CAPTCHA/OTP).
+User receives SMS/WhatsApp confirmation + tracking updates.
+6. Security & Monitoring Layer
+Data is protected using encryption, IAM access control, and audit logs.
+Analytics track scheme usage and impact.
+Technologies to be used in the solution:
+AI Components
+Retrieval-Augmented Generation (RAG)
+Multilingual NLP + Intent Detection
+Speech Recognition (Voice-first access)
+Backend
+FastAPI
+PostgreSQL for structured scheme + user data
+Vector Database for semantic search
+Frontend
+React
+WhatsApp Bot integration for rural access
+1. Compute & Backend Hosting
+2. Database & Storage
+Amazon EC2 – Host backend services
+AWS Lambda – Serverless chatbot triggers
+Amazon ECS (Fargate) – Container-based deployment
+Amazon RDS (PostgreSQL) – User profiles + scheme database
+Amazon DynamoDB – Fast session storage for chatbot
+Amazon S3 – Store documents (PDFs, IDs, scheme files)
+3. AI & NLP Services
+Amazon Bedrock – LLM-powered chatbot + RAG responses
+Amazon Comprehend – Intent detection + entity extraction
+Amazon Translate – Local-language translation
+Amazon Transcribe – Speech-to-text for voice-first access
+Amazon Polly – Text-to-speech responses
+4. Search & Recommendation
+Amazon OpenSearch Service – Semantic search over schemes
+Amazon Kendra – Intelligent document retrieval
+5. Security & Identity
+AWS IAM – Role-based access control
+AWS Cognito – Citizen login + OTP authentication
+AWS KMS – Encrypt sensitive user data
+AWS CloudTrail – Audit logs for agent actions
+6. Monitoring & Notifications
+Amazon CloudWatch – System monitoring
+Amazon SNS – SMS/WhatsApp notifications for users
+Amazon SES – Email updates
+Estimated implementation cost:
+Service
+Usage
+AWS Lambda
+Amazon RDS (PostgreSQL
+t3.micro)
+Amazon S3
+Amazon Bedrock (LLM usage)
+Chatbot backend triggers
+User + Scheme DB
+Document storage
+Few thousand queries
+Monthly Cost (Approx.)
+$0–5
+$15–25
+$1–3
+Component
+Scaled RDS + Read replicas
+OpenSearch (medium cluster)
+Bedrock LLM queries (heavy
+usage)
+$20–40
+Amazon Transcribe + Polly
+Amazon OpenSearch (small
+instance)
+CloudWatch + SNS
+Voice queries (limited)
+Scheme retrieval
+Monitoring + alerts
+$10–20
+$20–30
+Voice services (Transcribe/Polly)
+Storage + Bandwidth
+Monthly Cost
+$150–250
+$200–400
+$300–600
+$200–400
+$50–100
+$5–10
+To keep costs low:
+Use RAG + Retrieval instead of full LLM calls every time
+Cache common scheme FAQs
+Run OpenSearch only for scheme indexing
+Use Lambda for lightweight workloads
+Voice services only when required
+Store only essential citizen data (minimizes storage + compliance)
+Monitoring + Security
+$50–100
+Estimated: $10K–50K/month
+depending on:
+millions of users
+voice-heavy traffic
+multilingual inference load
+agent workflows
+Add as per the requirements for the hackathon:
+This platform enables:
+Faster scheme discovery for underserved communities
+Reduced application errors through autofill
+Inclusion of rural and PWD users via voice-first
+design
+Trusted submission through agent verification
+Improved access to welfare, education, and
+opportunities
+Future Scope
+Expand scheme coverage across all Indian states
+Integrate real-time government APIs
+Add application status tracking
+Offline-first support for low-connectivity regions
+Partner with CSC centers and NGOs for deployment
