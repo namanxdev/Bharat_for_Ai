@@ -4,7 +4,7 @@ Sends scheme details to users via SMS with fallback to mock responses
 """
 import logging
 from typing import Dict, Any
-from ..config import settings
+from config import settings
 
 logger = logging.getLogger(__name__)
 

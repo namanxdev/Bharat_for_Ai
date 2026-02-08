@@ -6,14 +6,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import logging
 
-from .config import settings
-from .data.schemes import SCHEMES
-from .services.vector_service import VectorService
-from .services.llm_service import LLMService
-from .services.sms_service import SMSService
+from config import settings
+from data.schemes import SCHEMES
+from services.vector_service import VectorService
+from services.llm_service import LLMService
+from services.sms_service import SMSService
 
 # Import routers
-from .routes import chat, eligibility, sms, health
+from routes import chat, eligibility, sms, health
 
 # Configure logging
 logging.basicConfig(

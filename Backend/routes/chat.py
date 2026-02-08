@@ -4,14 +4,14 @@ Handles conversational interactions with users
 Collects profile information and provides scheme recommendations
 """
 from fastapi import APIRouter, HTTPException, Request
-from ..models.schemas import ChatRequest, ChatResponse, UserProfile
-from ..data.schemes import get_eligible_schemes
+from models.schemas import ChatRequest, ChatResponse, UserProfile
+from data.schemes import get_eligible_schemes
 from datetime import datetime, timedelta
 from typing import Dict, Any
 import logging
 import uuid
 import re
-from ..utils.rate_limit import chat_limiter
+from utils.rate_limit import chat_limiter
 
 logger = logging.getLogger(__name__)
 

@@ -4,7 +4,7 @@ Supports Google Gemini with LangChain and fallback to template-based responses
 """
 import logging
 from typing import List, Dict, Any, Optional
-from ..config import settings
+from config import settings
 
 logger = logging.getLogger(__name__)
 

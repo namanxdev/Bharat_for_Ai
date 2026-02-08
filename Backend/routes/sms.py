@@ -3,9 +3,9 @@ SMS endpoint
 Sends scheme details to users via SMS
 """
 from fastapi import APIRouter, HTTPException, Request
-from ..models.schemas import SMSRequest, SMSResponse
-from ..data.schemes import SCHEMES
-from ..utils.rate_limit import sms_limiter
+from models.schemas import SMSRequest, SMSResponse
+from data.schemes import SCHEMES
+from utils.rate_limit import sms_limiter
 
 router = APIRouter()
 

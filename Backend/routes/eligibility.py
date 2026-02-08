@@ -3,9 +3,9 @@ Eligibility endpoint
 Checks user eligibility for government schemes
 """
 from fastapi import APIRouter, HTTPException, Request
-from ..models.schemas import EligibilityRequest, EligibilityResponse
-from ..data.schemes import get_eligible_schemes
-from ..utils.rate_limit import eligibility_limiter
+from models.schemas import EligibilityRequest, EligibilityResponse
+from data.schemes import get_eligible_schemes
+from utils.rate_limit import eligibility_limiter
 
 router = APIRouter()
 
